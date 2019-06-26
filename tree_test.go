@@ -194,7 +194,7 @@ func TestTreeWildcard(t *testing.T) {
 		{"/info/gordon/public", false, "/info/:user/public", Params{Param{"user", "gordon"}}},
 		{"/info/gordon/project/go", false, "/info/:user/project/:project", Params{Param{"user", "gordon"}, Param{"project", "go"}}},
 		{"/search/something%2Fencoded", false, "/search/:query", Params{Param{"query", "something/encoded"}}},
-		{"/search/invalid%encoding", false, "/search/:query", Params{Param{"query", "invalid%encoding"}}}		
+		{"/search/invalid%encoding", false, "/search/:query", Params{Param{"query", "invalid%encoding"}}},
 	})
 
 	checkPriorities(t, tree)
