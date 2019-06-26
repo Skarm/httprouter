@@ -16,7 +16,7 @@ func Logger(l *logrus.Logger) func(httprouter.Handle) httprouter.Handle {
 
 	return func(fn httprouter.Handle) httprouter.Handle {
 		return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
-			reqID, _ := r.Context().Value(RequestIDContextKey{}).(string)
+			reqID, _ := r.Context().Value(RequestIDKey).(string)
 			var code int
 
 			l.WithFields(logrus.Fields{
@@ -40,7 +40,7 @@ func Logger(l *logrus.Logger) func(httprouter.Handle) httprouter.Handle {
 				}).Infoln("END")
 			}(time.Now())
 
-			wrapper := func(w2 http.ResponseWriter, r2 *http.Request) {
+			wrapper := func(w2 http.ResponseWriter, r2 *http.Request, p httprouter.Params) {
 				fn(w2, r2, p)
 			}
 
