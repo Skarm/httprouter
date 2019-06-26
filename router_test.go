@@ -309,15 +309,15 @@ func TestRouterOPTIONS(t *testing.T) {
 func TestRouterOPTIONSPostHandler(t *testing.T) {
 	handlerFunc := func(_ http.ResponseWriter, _ *http.Request, _ Params) {}
 
- 	router := New()
+	router := New()
 	router.OptionsHandler = http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("test-header", "true")
 		w.Header().Set("Access-Control-Allow-Methods", w.Header().Get("Allow"))
 	})
 
- 	router.POST("/path", handlerFunc)
+	router.POST("/path", handlerFunc)
 
- 	r, _ := http.NewRequest(http.MethodOptions, "*", nil)
+	r, _ := http.NewRequest(http.MethodOptions, "*", nil)
 	w := httptest.NewRecorder()
 	router.ServeHTTP(w, r)
 	if !(w.Code == http.StatusOK) {
@@ -559,7 +559,7 @@ func TestRouterUseRawPathSuccess(t *testing.T) {
 	router := New()
 	router.UseRawPath = true
 
- 	routed := false
+	routed := false
 	router.Handle(http.MethodGet, "/user/:name", func(w http.ResponseWriter, r *http.Request, ps Params) {
 		routed = true
 		want := Params{Param{"name", "abc/123"}}
@@ -568,20 +568,20 @@ func TestRouterUseRawPathSuccess(t *testing.T) {
 		}
 	})
 
- 	w := new(mockResponseWriter)
+	w := new(mockResponseWriter)
 
- 	req, _ := http.NewRequest(http.MethodGet, "/user/abc%2F123", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/user/abc%2F123", nil)
 	router.ServeHTTP(w, req)
 
- 	if !routed {
+	if !routed {
 		t.Fatal("routing failed")
 	}
 }
 
- func TestRouterUseRawPathFailure(t *testing.T) {
+func TestRouterUseRawPathFailure(t *testing.T) {
 	router := New()
 
- 	routed := false
+	routed := false
 	router.Handle(http.MethodGet, "/user/:name", func(w http.ResponseWriter, r *http.Request, ps Params) {
 		routed = true
 		want := Params{Param{"name", "abc/123"}}
@@ -590,12 +590,12 @@ func TestRouterUseRawPathSuccess(t *testing.T) {
 		}
 	})
 
- 	w := new(mockResponseWriter)
+	w := new(mockResponseWriter)
 
- 	req, _ := http.NewRequest(http.MethodGet, "/user/abc%2F123", nil)
+	req, _ := http.NewRequest(http.MethodGet, "/user/abc%2F123", nil)
 	router.ServeHTTP(w, req)
 
- 	if routed {
+	if routed {
 		t.Fatal("routing unexpectedly succeeded")
 	}
 }

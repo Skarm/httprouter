@@ -372,7 +372,7 @@ walk: // outer loop for walking the tree
 					i := len(p)
 					p = p[:i+1] // expand slice within preallocated capacity
 					p[i].Key = n.path[1:]
-					
+
 					value, err := url.PathUnescape(path[:end])
 					if err != nil {
 						p[i].Value = path[:end]

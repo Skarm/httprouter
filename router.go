@@ -144,7 +144,7 @@ type Router struct {
 
 	// Configurable http.Handler which is called after modifying the automatic reply
 	// to OPTIONS requests. If HandleOptions is false this won't be used
-	OptionsHandler http.Handler	
+	OptionsHandler http.Handler
 
 	// Configurable http.Handler which is called when no matching route is
 	// found. If it is not set, http.NotFound is used.
@@ -170,6 +170,8 @@ type Router struct {
 	// by calling the EncodedPath method.
 	// This tells the router to use the request.URL.RawPath when parsing the path.
 	UseRawPath bool
+
+	middlewares []middleware
 }
 
 // Make sure the Router conforms with the http.Handler interface
@@ -185,6 +187,10 @@ func New() *Router {
 		HandleOPTIONS:          true,
 		UseRawPath:             false,
 	}
+}
+
+func (r *Router) Group(path string, m ...middleware) *RouteGroup {
+	return newRouteGroup(r, path, m...)
 }
 
 // GET is a shortcut for router.Handle(http.MethodGet, path, handle)
