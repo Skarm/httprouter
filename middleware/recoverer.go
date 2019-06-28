@@ -17,25 +17,17 @@ import (
 // possible. Recoverer prints a request ID if one is provided.
 //
 // Alternatively, look at https://github.com/pressly/lg middleware pkgs.
-func Recoverer(next httprouter.Handler) httprouter.Handler {
-	fn := func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func Recoverer(next httprouter.Handle) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 		defer func() {
 			if rvr := recover(); rvr != nil {
-
-				logEntry := GetLogEntry(r)
-				if logEntry != nil {
-					logEntry.Panic(rvr, debug.Stack())
-				} else {
-					fmt.Fprintf(os.Stderr, "Panic: %+v\n", rvr)
-					debug.PrintStack()
-				}
+				fmt.Fprintf(os.Stderr, "Panic: %+v\n", rvr)
+				debug.PrintStack()
 
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			}
 		}()
 
-		next.ServeHTTP(w, r)
+		next(w, r, p)
 	}
-
-	return http.HandlerFunc(fn)
 }

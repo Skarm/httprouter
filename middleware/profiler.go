@@ -22,19 +22,20 @@ func Profiler() http.Handler {
 	r := httprouter.New()
 	r.Use(NoCache)
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	r.GET("/", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		http.Redirect(w, r, r.RequestURI+"/pprof/", 301)
 	})
-	r.HandleFunc("/pprof", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+
+	r.Handle(http.MethodGet, "/pprof", func(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		http.Redirect(w, r, r.RequestURI+"/", 301)
 	})
 
-	r.HandleFunc("/pprof/*", pprof.Index)
-	r.HandleFunc("/pprof/cmdline", pprof.Cmdline)
-	r.HandleFunc("/pprof/profile", pprof.Profile)
-	r.HandleFunc("/pprof/symbol", pprof.Symbol)
-	r.HandleFunc("/pprof/trace", pprof.Trace)
-	r.HandleFunc("/vars", expVars)
+	r.HandlerFunc(http.MethodGet, "/pprof/*", pprof.Index)
+	r.HandlerFunc(http.MethodGet, "/pprof/cmdline", pprof.Cmdline)
+	r.HandlerFunc(http.MethodGet, "/pprof/profile", pprof.Profile)
+	r.HandlerFunc(http.MethodGet, "/pprof/symbol", pprof.Symbol)
+	r.HandlerFunc(http.MethodGet, "/pprof/trace", pprof.Trace)
+	r.Handle(http.MethodGet, "/vars", expVars)
 
 	return r
 }

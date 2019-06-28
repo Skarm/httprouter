@@ -1,5 +1,10 @@
 package httprouter
 
+import (
+	"context"
+	"net/http"
+)
+
 type middleware func(Handle) Handle
 
 // Use appends new middleware to current Router.
@@ -28,4 +33,20 @@ func (r *Router) Wrap(fn Handle) Handle {
 	}
 
 	return result
+}
+
+// WrapHandler wraps http.Handler and returns httprouter.Handle
+func WrapHandler(next http.Handler) Handle {
+	return func(w http.ResponseWriter, r *http.Request, p Params) {
+		//pass httprouter.Params to request context
+		ctx := context.WithValue(r.Context(), "params", p)
+		//call next middleware with new context
+		next.ServeHTTP(w, r.WithContext(ctx))
+	}
+}
+
+// FetchParams from http.Request
+func FetchParams(req *http.Request) Params {
+	ctx := req.Context()
+	return ctx.Value("params").(Params)
 }

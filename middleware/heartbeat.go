@@ -11,8 +11,8 @@ import (
 // `/ping` that load balancers or uptime testing external services
 // can make a request before hitting any routes. It's also convenient
 // to place this above ACL middlewares as well.
-func Heartbeat(endpoint string) func(httprouter.Handler) httprouter.Handler {
-	f := func(h httprouter.Handler) httprouter.Handler {
+func Heartbeat(endpoint string) func(httprouter.Handle) httprouter.Handle {
+	f := func(h httprouter.Handle) httprouter.Handle {
 		fn := func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 			if r.Method == http.MethodGet && strings.EqualFold(r.URL.Path, endpoint) {
 				w.Header().Set("Content-Type", "text/plain")
@@ -20,9 +20,9 @@ func Heartbeat(endpoint string) func(httprouter.Handler) httprouter.Handler {
 				w.Write([]byte("."))
 				return
 			}
-			h.ServeHTTP(w, r)
+			h(w, r, p)
 		}
-		return http.HandlerFunc(fn)
+		return fn
 	}
 	return f
 }

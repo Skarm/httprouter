@@ -9,20 +9,19 @@ import (
 
 // ContentCharset generates a handler that writes a 415 Unsupported Media Type response if none of the charsets match.
 // An empty charset will allow requests with no Content-Type header or no specified charset.
-func ContentCharset(charsets ...string) func(next httprouter.Handler) httprouter.Handler {
+func ContentCharset(charsets ...string) func(next httprouter.Handle) httprouter.Handle {
 	for i, c := range charsets {
 		charsets[i] = strings.ToLower(c)
 	}
 
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+	return func(next httprouter.Handle) httprouter.Handle {
+		return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 			if !contentEncoding(r.Header.Get("Content-Type"), charsets...) {
 				w.WriteHeader(http.StatusUnsupportedMediaType)
 				return
 			}
-
-			next.ServeHTTP(w, r)
-		})
+			next(w, r, p)
+		}
 	}
 }
 

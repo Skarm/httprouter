@@ -38,8 +38,8 @@ var etagHeaders = []string{
 //      Cache-Control: no-cache, private, max-age=0
 //      X-Accel-Expires: 0
 //      Pragma: no-cache (for HTTP/1.0 proxies/clients)
-func NoCache(h httprouter.Handler) httprouter.Handler {
-	fn := func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
+func NoCache(h httprouter.Handle) httprouter.Handle {
+	return func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 
 		// Delete any ETag headers that may have been set
 		for _, v := range etagHeaders {
@@ -53,8 +53,6 @@ func NoCache(h httprouter.Handler) httprouter.Handler {
 			w.Header().Set(k, v)
 		}
 
-		h.ServeHTTP(w, r)
+		h(w, r, p)
 	}
-
-	return http.HandlerFunc(fn)
 }

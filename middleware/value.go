@@ -8,12 +8,12 @@ import (
 )
 
 // WithValue is a middleware that sets a given key/value in a context chain.
-func WithValue(key interface{}, val interface{}) func(next httprouter.Handler) httprouter.Handler {
-	return func(next httprouter.Handler) httprouter.Handler {
+func WithValue(key interface{}, val interface{}) func(next httprouter.Handle) httprouter.Handle {
+	return func(next httprouter.Handle) httprouter.Handle {
 		fn := func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 			r = r.WithContext(context.WithValue(r.Context(), key, val))
-			next.ServeHTTP(w, r)
+			next(w, r, p)
 		}
-		return http.HandlerFunc(fn)
+		return fn
 	}
 }
